@@ -1,0 +1,22 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "resumeOrganizerGoVisual",
+  "outputfilename": "resumeOrganizerGoVisual",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "frontend": {
+    "dir": "frontend/src",
+    "index": "index.html",
+    "install": "",
+    "build": "",
+    "bridge": true,
+    "bundle": true
+  },
+
+  "author": {
+    "name": "obamium3157",
+    "email": "anatolijkovyralo@gmail.com"
+  }
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+    <title>resumeOrganizerGoVisual</title>
+    <link rel="stylesheet" href="src/general.css">
+    <link rel="stylesheet" href="src/login.css">
+    <link rel="stylesheet" href="src/main.css">
+    <link rel="stylesheet" href="src/assets/fonts/font.css">
+</head>
+<body>
+    <div id="login" class="page">
+        <div class="authorization">
+            <div class="input-fields">
+                <label class="input-fields__label" for="email">Введите email:</label>
+                <input class="input-fields__input" id="email" type="email" placeholder="email">
+
+                <label class="input-fields__label" for="password">Введите пароль:</label>
+                <input class="input-fields__input" id="password" type="password" placeholder="пароль">
+            </div>
+
+            <button class="authorization__submit interface-button">Войти</button>
+        </div>
+    </div>
+
+    <div id="main" class="page">
+        <div class="info">
+            <img class="info__mail-image" src="src/assets/images/mail.svg" alt="Почта">
+            <span class="info__mail-text">mail_main@mail.asd</span>
+        </div>
+
+        <div class="stopwatch">
+            <p class="stopwatch__label big-text">Автоматическое сканироваиние через</p>
+            <p class="stopwatch__value big-text">01:13:44</p>
+        </div>
+
+        <button class="main__scan-btn interface-button">Сканировать</button>
+    </div>
+
+    <script src="src/main.js" type="module"></script>
+</body>
+</html>
