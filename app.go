@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"log"
 	"regexp"
 )
 
@@ -36,13 +37,34 @@ func (a *App) ValidateEmail(email string) bool {
 
 func (a *App) RunScan() {
 	runtime.EventsEmit(a.ctx, "log", "Сканирование почты")
-	handler.Start(func(msg string) {
+	if err := handler.Start(func(msg string) {
 		runtime.EventsEmit(a.ctx, "log", msg)
-	})
+	}); err != nil {
+		log.Printf("Ошибка при вызове handler.Start: %v", err)
+	}
 }
 
 func (a *App) CheckEnvContainsEmailData() bool {
 	return handler.CheckEnvData(func(msg string) {
 		runtime.EventsEmit(a.ctx, "env_read", msg)
 	})
+}
+
+func (a *App) SaveCredentials(email, password string) string {
+	if !a.ValidateEmail(email) {
+		return "Неверный email"
+	}
+	if password == "" {
+		return "Пароль не может быть пустым"
+	}
+
+	err := handler.SaveCredentials(email, password)
+	if err != nil {
+		return "Ошибка при сохранении: " + err.Error()
+	}
+	return "Успешно сохранено"
+}
+
+func (a *App) GetCredential(key string) (string, error) {
+	return handler.GetEnv(key, func(msg string) {})
 }

@@ -5,7 +5,11 @@ export function CheckEnvContainsEmailData():Promise<boolean>;
 
 export function DisplayLogInfo(arg1:string):Promise<void>;
 
+export function GetCredential(arg1:string):Promise<string>;
+
 export function RunScan():Promise<void>;
+
+export function SaveCredentials(arg1:string,arg2:string):Promise<string>;
 
 export function SendInfo(arg1:string,arg2:string):Promise<void>;
 

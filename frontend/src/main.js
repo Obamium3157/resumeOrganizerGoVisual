@@ -1,4 +1,4 @@
-import {CheckEnvContainsEmailData, DisplayLogInfo, RunScan, SendInfo, ValidateEmail} from "../wailsjs/go/main/App";
+import {CheckEnvContainsEmailData, GetCredential, RunScan, SaveCredentials} from "../wailsjs/go/main/App";
 import {EventsOn} from "../wailsjs/runtime";
 
 const LOGIN_PAGE = 'login'
@@ -15,29 +15,19 @@ function showPage(name) {
 
 }
 
-async function goToMain() {
-    const email = document.querySelector('#email').value;
-    const password = document.querySelector('#password').value;
+const emailString = "EMAIL"
 
-    if (!email || !password) {
-        DisplayLogInfo('Все поля должны быть заполнены').catch(err => console.error(err));
-
-        return;
+async function goToMain(sender) {
+    let mail = document.querySelector('#email').value.trim();
+    if (!mail || sender !== LOGIN_PAGE) {
+        mail = await GetCredential(emailString).then(
+            (res) => {
+                return res;
+            }
+        ).catch(err => console.log(err));
     }
 
-    const emailValidated = await ValidateEmail(email).then(res => {
-        if (!res) {
-            DisplayLogInfo('Введен некорректный email').catch(err => console.error(err));
-        }
-
-        return res;
-    }).catch(err => console.error(err));
-
-    if (!emailValidated) {
-        return;
-    }
-
-    SendInfo(email, password).catch(err => console.error(err));
+    document.querySelector('.info__mail-text').innerText = mail;
 
     showPage(MAIN_PAGE);
 }
@@ -48,14 +38,29 @@ async function login() {
     }).catch(err => console.error(err));
 
     if (flag) {
+        document.querySelector('.info__mail-text').innerText = await GetCredential(emailString).then(
+            (res) => {
+                return res;
+            }
+        ).catch(err => console.log(err));
+
         showPage(MAIN_PAGE);
     } else {
         showPage(LOGIN_PAGE);
     }
 }
 
+const success = "Успешно сохранено";
+
 document.querySelector('.authorization__submit').addEventListener('click', async () => {
-    await goToMain()
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const result = await SaveCredentials(email, password).catch(err => console.error(err));
+
+    if (result === success) {
+        await goToMain(LOGIN_PAGE)
+    }
 });
 
 document.querySelector('.info').addEventListener('click', () => {
@@ -78,7 +83,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!statusValue) return;
 
         clearInterval(dotsInterval);
-        statusValue.innerText = msg;
+
+        if (msg.length > 90) {
+            statusValue.innerText = msg.slice(0, 87) + '...';
+            return;
+        }
 
         if (msg.includes('...')) {
             const baseText = msg.replace(/\.\.\.$/, '').trim();
@@ -86,9 +95,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             let dotCount = 0;
             dotsInterval = setInterval(() => {
-                dotCount = (dotCount + 1) % 4; // от 0 до 3
+                dotCount = (dotCount + 1) % 4;
                 statusValue.innerText = baseText + '.'.repeat(dotCount);
             }, 500);
+        } else {
+            statusValue.innerText = msg;
         }
     });
+
 });

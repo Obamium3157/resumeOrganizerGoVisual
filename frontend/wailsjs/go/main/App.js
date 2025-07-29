@@ -10,8 +10,16 @@ export function DisplayLogInfo(arg1) {
   return window['go']['main']['App']['DisplayLogInfo'](arg1);
 }
 
+export function GetCredential(arg1) {
+  return window['go']['main']['App']['GetCredential'](arg1);
+}
+
 export function RunScan() {
   return window['go']['main']['App']['RunScan']();
+}
+
+export function SaveCredentials(arg1, arg2) {
+  return window['go']['main']['App']['SaveCredentials'](arg1, arg2);
 }
 
 export function SendInfo(arg1, arg2) {

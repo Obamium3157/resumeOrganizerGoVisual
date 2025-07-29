@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/emersion/go-imap/client"
 	"github.com/joho/godotenv"
-	"log"
 	"os"
 )
 
@@ -16,19 +15,11 @@ const (
 	AuthorizationToken = "AUTHORIZATION_TOKEN"
 )
 
-type EnvError struct {
-	msg string
-}
-
-func (e *EnvError) Error() string {
-	return e.msg
-}
-
-func getEnv(key string, emit func(string)) (string, error) {
+func GetEnv(key string, emit func(string)) (string, error) {
 	v := os.Getenv(key)
 	if v == "" {
 		emit(key + " не задан")
-		return "", &EnvError{msg: fmt.Sprintf("%s не задан", key)}
+		return "", fmt.Errorf("%s не задан", key)
 	}
 	return v, nil
 }
@@ -39,30 +30,51 @@ func CheckEnvData(emit func(string)) bool {
 		emit(fmt.Sprintf("Ошибка при загрузке .env файла: %v", err))
 	}
 
-	_, emailErr := getEnv(Email, emit)
-	_, passwordErr := getEnv(Password, emit)
+	_, emailErr := GetEnv(Email, emit)
+	_, passwordErr := GetEnv(Password, emit)
 
 	return emailErr == nil && passwordErr == nil
 }
 
-func Start(emit func(string)) {
-	err := godotenv.Load()
-	if err != nil {
-		emit(fmt.Sprintf("Ошибка при загрузке .env файла: %v", err))
-		log.Fatal("Ошибка при загрузке .env файла")
+func SaveCredentials(email, password string) error {
+	envMap := map[string]string{
+		Email:    email,
+		Password: password,
 	}
 
-	email, err := getEnv(Email, emit)
+	_ = godotenv.Load(".env")
+	existing, _ := godotenv.Read(".env")
+
+	for k, v := range envMap {
+		existing[k] = v
+		if err := os.Setenv(k, v); err != nil {
+			return err
+		}
+	}
+
+	return godotenv.Write(existing, ".env")
+}
+
+func Start(emit func(string)) error {
+	if err := godotenv.Load(); err != nil {
+		emit(fmt.Sprintf("Ошибка при загрузке .env файла: %v", err))
+		return fmt.Errorf("ошибка при загрузке .env файла: %v", err)
+	}
+
+	email, err := GetEnv(Email, emit)
 	if err != nil {
 		emit("Почта не указана в .env")
+		return fmt.Errorf("почта не указана в .env")
 	}
-	password, err := getEnv(Password, emit)
+	password, err := GetEnv(Password, emit)
 	if err != nil {
 		emit("Пароль не указан в .env")
+		return fmt.Errorf("пароль не указан в .env")
 	}
-	token, err := getEnv(AuthorizationToken, emit)
+	token, err := GetEnv(AuthorizationToken, emit)
 	if err != nil {
 		emit("Токен авторизации не указан в .env")
+		return fmt.Errorf("токен авторизации не указан в .env")
 	}
 
 	emit("Подключение к IMAP...")
@@ -70,14 +82,12 @@ func Start(emit func(string)) {
 	imapClient, err := mail.Connect(email, password)
 	if err != nil {
 		emit(fmt.Sprintf("Ошибка подключения к почте: %v", err))
-		log.Fatalf("Ошибка подключения к почте: %v", err)
+		return fmt.Errorf("ошибка подключения к почте: %v", err)
 	}
 	emit("Подключение к IMAP успешно")
 	defer func(imapClient *client.Client) {
-		err := imapClient.Logout()
-		if err != nil {
+		if err := imapClient.Logout(); err != nil {
 			emit(fmt.Sprintf("Ошибка выхода из клиента: %v", err))
-			log.Fatalf("Ошибка выхода из клиента: %v", err)
 		}
 	}(imapClient)
 
@@ -87,6 +97,8 @@ func Start(emit func(string)) {
 
 	if err := mail.ProcessEmails(imapClient, diskSession, emit); err != nil {
 		emit(fmt.Sprintf("Ошибка обработки почты: %v", err))
-		log.Fatalf("Ошибка обработки почты: %v", err)
+		return fmt.Errorf("ошибка обработки почты: %v", err)
 	}
+
+	return nil
 }
