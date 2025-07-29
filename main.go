@@ -11,12 +11,10 @@ import (
 var assets embed.FS
 
 func main() {
-	// Create an instance of the app structure
 	app := NewApp()
 
-	// Create application with options
 	err := wails.Run(&options.App{
-		Title:         "resumeOrganizerGoVisual",
+		Title:         "resume_organizer",
 		Width:         430,
 		Height:        480,
 		DisableResize: true,

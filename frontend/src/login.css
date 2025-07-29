@@ -17,13 +17,13 @@
 .input-fields__label {
     align-self: flex-start;
 
-    font: 400 16px/140% "DM Sans", sans-serif;
+    font: 400 16px/140% "Golos UI";
     color: #222222;
     margin-bottom: 8px;
 }
 
 .input-fields__input {
-    font: 400 16px/100% "DM Sans", sans-serif;
+    font: 400 16px/100% "Golos UI";
     color: #757575;
 
     width: inherit;

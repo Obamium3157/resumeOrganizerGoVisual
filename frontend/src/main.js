@@ -14,7 +14,7 @@ function showPage(name) {
 
 }
 
-document.querySelector('.authorization__submit').addEventListener('click', async () => {
+async function goToMain() {
     const email = document.querySelector('#email').value;
     const password = document.querySelector('#password').value;
 
@@ -39,6 +39,10 @@ document.querySelector('.authorization__submit').addEventListener('click', async
     SendInfo(email, password).catch(err => console.error(err));
 
     showPage(MAIN_PAGE);
+}
+
+document.querySelector('.authorization__submit').addEventListener('click', async () => {
+    await goToMain()
 });
 
 document.querySelector('.info').addEventListener('click', () => {

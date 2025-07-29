@@ -4,3 +4,11 @@
     src: url("./DMSans-Regular.ttf") format("ttf");
     font-display: swap;
 }
+
+@font-face {
+    font-family: "Golos UI";
+    font-style: normal;
+    src: url("./Golos-UI-Complete-Family.web/PT/PT/Golos-UI/golos-ui_vf.woff2") format("woff2"),
+    url("./Golos-UI-Complete-Family.web/PT/PT/Golos-UI/golos-ui_vf.woff") format("woff");
+    font-display: swap;
+}

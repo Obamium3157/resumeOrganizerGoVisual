@@ -1,21 +1,47 @@
 .info {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
     position: absolute;
     top: 20px;
     right: 10px;
 
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
-
-    align-self: flex-end;
-
-    /*margin-top: 20px;*/
-    /*margin-right: 10px;*/
-}
-
-.info:hover {
     cursor: pointer;
 }
+
+.info__tooltip-text {
+    background-color: #222222;
+    color: #ffffff;
+    padding: 5px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 1;
+}
+
+.info__tooltip-text::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #222222 transparent;
+}
+
+.info:hover .info__tooltip-text {
+    opacity: 1;
+}
+
 
 .info__mail-image {
     width: 24px;
@@ -25,7 +51,7 @@
 }
 
 .info__mail-text {
-    font: 400 13px/100% "DM Sans", sans-serif;
+    font: 400 13px/100% "Golos UI";
     color: #222222;
 
     text-decoration: underline;
@@ -41,7 +67,7 @@
 }
 
 .big-text {
-    font: 400 22px/150% "DM Sans", sans-serif;
+    font: 400 22px/150% "Golos UI";
     color: #222222;
 }
 
