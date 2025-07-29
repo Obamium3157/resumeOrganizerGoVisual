@@ -1,8 +1,10 @@
 package main
 
 import (
+	"changeme/backend/handler"
 	"context"
 	"fmt"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"regexp"
 )
 
@@ -30,4 +32,17 @@ func (a *App) DisplayLogInfo(message string) {
 func (a *App) ValidateEmail(email string) bool {
 	re := regexp.MustCompile(`[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
 	return re.MatchString(email)
+}
+
+func (a *App) RunScan() {
+	runtime.EventsEmit(a.ctx, "log", "Сканирование почты")
+	handler.Start(func(msg string) {
+		runtime.EventsEmit(a.ctx, "log", msg)
+	})
+}
+
+func (a *App) CheckEnvContainsEmailData() bool {
+	return handler.CheckEnvData(func(msg string) {
+		runtime.EventsEmit(a.ctx, "env_read", msg)
+	})
 }

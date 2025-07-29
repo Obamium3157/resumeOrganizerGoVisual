@@ -57,13 +57,21 @@
     text-decoration: underline;
 }
 
-.stopwatch {
+.status {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 
     margin-bottom: 40px;
+}
+
+.status__label {
+    text-align: center;
+}
+
+.status__value {
+    text-align: center;
 }
 
 .big-text {
