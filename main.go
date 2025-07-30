@@ -14,10 +14,9 @@ func main() {
 	app := NewApp()
 
 	err := wails.Run(&options.App{
-		Title:         "resume_organizer",
-		Width:         430,
-		Height:        480,
-		DisableResize: true,
+		Title:  "resume_organizer",
+		Width:  430,
+		Height: 480,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

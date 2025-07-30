@@ -146,7 +146,7 @@ func Start(emit func(string)) error {
 		return fmt.Errorf("токен авторизации не указан в .env")
 	}
 
-	emit("Подключение к IMAP...")
+	emit("Подключение к IMAP")
 
 	imapClient, err := mail.Connect(email, password)
 	if err != nil {
