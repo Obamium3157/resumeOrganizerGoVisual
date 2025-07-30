@@ -1,8 +1,14 @@
-import {CheckEnvContainsEmailData, GetCredential, RunScan, SaveCredentials} from "../wailsjs/go/main/App";
+import {
+    CheckEnvContainsEmailData,
+    GetCredential,
+    RunScan,
+    SaveCredentials, SaveToken
+} from "../wailsjs/go/main/App";
 import {EventsOn} from "../wailsjs/runtime";
 
 const LOGIN_PAGE = 'login'
 const MAIN_PAGE = 'main'
+const CHANGE_TOKEN_PAGE = 'change-token'
 
 function showPage(name) {
     const pages = document.querySelectorAll('.page');
@@ -27,7 +33,7 @@ async function goToMain(sender) {
         ).catch(err => console.log(err));
     }
 
-    document.querySelector('.info__mail-text').innerText = mail;
+    document.querySelector('.change-email__mail-text').innerText = mail;
 
     showPage(MAIN_PAGE);
 }
@@ -38,7 +44,7 @@ async function login() {
     }).catch(err => console.error(err));
 
     if (flag) {
-        document.querySelector('.info__mail-text').innerText = await GetCredential(emailString).then(
+        document.querySelector('.change-email__mail-text').innerText = await GetCredential(emailString).then(
             (res) => {
                 return res;
             }
@@ -50,20 +56,83 @@ async function login() {
     }
 }
 
-const success = "Успешно сохранено";
-
 document.querySelector('.authorization__submit').addEventListener('click', async () => {
-    const email = document.getElementById("email").value.trim();
+    const emailFieldWrapper = document.querySelector('.email-field');
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.querySelector('#password');
     const password = document.getElementById("password").value.trim();
 
-    const result = await SaveCredentials(email, password).catch(err => console.error(err));
+    emailFieldWrapper.classList.remove('error');
 
-    if (result === success) {
-        await goToMain(LOGIN_PAGE)
+    const email = emailInput.value.trim();
+
+    const success = await SaveCredentials(email, password).catch(err => console.error(err));
+
+    if (success) {
+        await goToMain(LOGIN_PAGE);
+    } else {
+        emailFieldWrapper.classList.add('error');
+        passwordInput.classList.add('error');
+        emailInput.focus();
     }
 });
 
-document.querySelector('.info').addEventListener('click', () => {
+document.querySelector('#email').addEventListener('input', () => {
+    document.querySelector('.email-field')?.classList.remove('error');
+    document.querySelector('#password')?.classList.remove('error');
+});
+
+document.querySelector('#password').addEventListener('input', () => {
+    document.querySelector('.email-field')?.classList.remove('error');
+    document.querySelector('#password')?.classList.remove('error');
+});
+
+document.querySelector('.authorization__token-change-submit').addEventListener('click', async () => {
+        const fieldWrapper = document.querySelector('.token-field');
+        const input = document.getElementById('token');
+
+        fieldWrapper.classList.remove('error');
+
+        const token = input.value.trim();
+
+        const statusInfoContainer = document.querySelector('.authorization__token-change-status-info');
+        statusInfoContainer.innerText = 'Проверка токена';
+
+        const baseText = statusInfoContainer.innerText.replace(/\.\.\.$/, '').trim();
+        let dotCount = 1;
+
+        const dotsAnimation = setInterval(
+            () => {
+                dotCount = (dotCount + 1) % 4;
+                statusInfoContainer.innerText = baseText + '.'.repeat(dotCount);
+            }, 500
+        );
+
+        const resp = await SaveToken(token)
+            .then(res => res)
+            .catch(err => {
+                console.error(err);
+                return false;
+            });
+
+        if (resp) {
+            fieldWrapper.classList.remove('error');
+            showPage(MAIN_PAGE);
+        } else {
+            fieldWrapper.classList.add('error');
+            input.focus();
+        }
+
+        clearInterval(dotsAnimation);
+        statusInfoContainer.innerText = '';
+    });
+
+document.getElementById('token').addEventListener('input', () => {
+        document.querySelector('.token-field')?.classList.remove('error');
+    });
+
+
+document.querySelector('.change-email').addEventListener('click', () => {
     showPage(LOGIN_PAGE);
 });
 
@@ -73,34 +142,33 @@ document.querySelector('.main__scan-btn').addEventListener('click', async () => 
     await RunScan().catch(err => console.error(err));
 });
 
-let dotsInterval = null;
+document.querySelector('.top-controls__change-token').addEventListener('click', () => {
+    showPage(CHANGE_TOKEN_PAGE)
+})
+
+
+document.querySelector('.page__cancel-btn').addEventListener('click', () => {
+    showPage(MAIN_PAGE);
+})
 
 document.addEventListener('DOMContentLoaded', async () => {
     await login();
 
     EventsOn("log", (msg) => {
         const statusValue = document.querySelector('.status__value');
+        const statusLabel = document.querySelector('.status__label');
         if (!statusValue) return;
 
-        clearInterval(dotsInterval);
+        if (msg.startsWith('Писем прочитано:')) {
+            statusLabel.innerText = msg;
+            return;
+        }
 
         if (msg.length > 90) {
             statusValue.innerText = msg.slice(0, 87) + '...';
             return;
         }
 
-        if (msg.includes('...')) {
-            const baseText = msg.replace(/\.\.\.$/, '').trim();
-            statusValue.innerText = baseText;
-
-            let dotCount = 0;
-            dotsInterval = setInterval(() => {
-                dotCount = (dotCount + 1) % 4;
-                statusValue.innerText = baseText + '.'.repeat(dotCount);
-            }, 500);
-        } else {
-            statusValue.innerText = msg;
-        }
+        statusValue.innerText = msg;
     });
-
 });

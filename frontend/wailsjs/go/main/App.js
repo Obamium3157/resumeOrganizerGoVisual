@@ -22,6 +22,10 @@ export function SaveCredentials(arg1, arg2) {
   return window['go']['main']['App']['SaveCredentials'](arg1, arg2);
 }
 
+export function SaveToken(arg1) {
+  return window['go']['main']['App']['SaveToken'](arg1);
+}
+
 export function SendInfo(arg1, arg2) {
   return window['go']['main']['App']['SendInfo'](arg1, arg2);
 }

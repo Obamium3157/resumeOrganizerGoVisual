@@ -1,45 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 
-    <title>resumeOrganizerGoVisual</title>
-    <link rel="stylesheet" href="src/general.css">
-    <link rel="stylesheet" href="src/login.css">
-    <link rel="stylesheet" href="src/main.css">
-    <link rel="stylesheet" href="src/assets/fonts/font.css">
-</head>
-<body>
-    <div id="login" class="page">
-        <div class="authorization">
-            <div class="input-fields">
-                <label class="input-fields__label" for="email">Введите email:</label>
-                <input class="input-fields__input" id="email" type="email" placeholder="email">
+        <title>resumeOrganizerGoVisual</title>
+        <link rel="stylesheet" href="src/general.css">
+        <link rel="stylesheet" href="src/login.css">
+        <link rel="stylesheet" href="src/main.css">
+        <link rel="stylesheet" href="src/assets/fonts/font.css">
+    </head>
 
-                <label class="input-fields__label" for="password">Введите пароль:</label>
-                <input class="input-fields__input" id="password" type="password" placeholder="пароль">
+    <body>
+<!--    ######                   LOGIN PAGE            ####################################-->
+        <div id="login" class="page">
+            <div class="authorization">
+                <div class="input-fields">
+                    <label class="input-fields__label" for="email">Введите email:</label>
+                    <div class="email-field">
+                        <input class="input-fields__input" id="email" type="email" placeholder="email">
+                        <span class="email-field__error-tooltip">Не удалось войти в почту</span>
+                    </div>
+
+                    <label class="input-fields__label" for="password">Введите пароль:</label>
+                    <input class="input-fields__input" id="password" type="password" placeholder="пароль">
+                </div>
+
+                <button class="authorization__submit interface-button">Войти</button>
+            </div>
+        </div>
+
+<!--    ######                   CHANGE TOKEN PAGE     ####################################-->
+        <div id="change-token" class="page">
+            <button class="page__cancel-btn interface-button">Отмена</button>
+
+            <div class="authorization">
+                <div class="input-fields">
+                    <label class="input-fields__label" for="token">Введите токен:</label>
+
+                    <div class="token-field">
+                        <input class="input-fields__input" id="token" type="password" placeholder="authorization token">
+
+                        <span class="token-field__error-tooltip">Токен не валиден</span>
+                    </div>
+
+                </div>
+
+                <button class="authorization__token-change-submit interface-button">Сменить токен</button>
+
+                <p class="authorization__token-change-status-info"></p>
+            </div>
+        </div>
+
+<!--    ######                   MAIN PAGE             ####################################-->
+        <div id="main" class="page">
+            <div class="top-controls">
+                <button class="top-controls__change-token interface-button">Сменить токен</button>
+
+                <div class="change-email">
+                    <img class="change-email__mail-image" src="src/assets/images/mail.svg" alt="Почта">
+                    <span class="change-email__mail-text">placeholder_email@mail.ru</span>
+                    <span class="change-email__tooltip-text">Выйти</span>
+                </div>
             </div>
 
-            <button class="authorization__submit interface-button">Войти</button>
-        </div>
-    </div>
+            <div class="status">
+                <p class="status__label big-text">Чтобы начать сканирование, нажмите на кнопку</p>
+                <p class="status__value big-text"></p>
+            </div>
 
-    <div id="main" class="page">
-        <div class="info">
-            <img class="info__mail-image" src="src/assets/images/mail.svg" alt="Почта">
-            <span class="info__mail-text"></span>
-            <span class="info__tooltip-text">Выйти</span>
+            <button class="main__scan-btn interface-button">Сканировать</button>
         </div>
 
-        <div class="status">
-            <p class="status__label big-text">Чтобы начать сканирование, нажмите на кнопку</p>
-            <p class="status__value big-text"></p>
-        </div>
-
-        <button class="main__scan-btn interface-button">Сканировать</button>
-    </div>
-
-    <script src="src/main.js" type="module"></script>
-</body>
-</html>
+        <script src="src/main.js" type="module"></script>
+    </body>
+    </html>

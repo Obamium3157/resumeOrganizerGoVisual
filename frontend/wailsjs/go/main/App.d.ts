@@ -9,7 +9,9 @@ export function GetCredential(arg1:string):Promise<string>;
 
 export function RunScan():Promise<void>;
 
-export function SaveCredentials(arg1:string,arg2:string):Promise<string>;
+export function SaveCredentials(arg1:string,arg2:string):Promise<boolean>;
+
+export function SaveToken(arg1:string):Promise<boolean>;
 
 export function SendInfo(arg1:string,arg2:string):Promise<void>;
 

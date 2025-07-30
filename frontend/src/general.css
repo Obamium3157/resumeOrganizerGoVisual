@@ -17,8 +17,6 @@ body {
     height: 100vh;
 
     position: relative;
-    /*padding: 2em;*/
-    /*font-family: sans-serif;*/
 }
 
 .hidden {
@@ -32,8 +30,12 @@ body {
     color: #ffffff;
     background-color: #222222;
 
+    outline: none;
     border: none;
     border-radius: 8px;
+    box-shadow: none;
 
     padding: 12px;
+
+    cursor: pointer;
 }

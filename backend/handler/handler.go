@@ -6,7 +6,11 @@ import (
 	"fmt"
 	"github.com/emersion/go-imap/client"
 	"github.com/joho/godotenv"
+	"io"
+	"log"
+	"net/http"
 	"os"
+	"time"
 )
 
 const (
@@ -40,6 +44,71 @@ func SaveCredentials(email, password string) error {
 	envMap := map[string]string{
 		Email:    email,
 		Password: password,
+	}
+
+	_ = godotenv.Load(".env")
+	existing, _ := godotenv.Read(".env")
+
+	for k, v := range envMap {
+		existing[k] = v
+		if err := os.Setenv(k, v); err != nil {
+			return err
+		}
+	}
+
+	return godotenv.Write(existing, ".env")
+}
+
+func ValidateCredentials(email, password string) error {
+	log.Println("Подключение к почте...")
+	if _, err := mail.Connect(email, password); err != nil {
+		log.Println("Подключение неуспешно: " + err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func ValidateToken(token string) error {
+	const destination = "https://cloud-api.yandex.net/v1/disk"
+
+	log.Printf("Отправлен запрос на: %v", destination)
+
+	req, err := http.NewRequest("GET", destination, nil)
+	if err != nil {
+		return fmt.Errorf("не удалось создать запрос: %w", err)
+	}
+	req.Header.Set("Authorization", "OAuth "+token)
+
+	httpClient := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	log.Println("Отправка запроса с проверкой токена...")
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("ошибка при запросе к API Яндекс.Диска: %w", err)
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Printf("Ошибка при вызове body.Close(): %v", err)
+		}
+	}(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("некорректный токен (status %d): %s)", resp.StatusCode, string(body))
+	}
+
+	log.Println("Успешно!")
+
+	return nil
+}
+
+func SaveToken(token string) error {
+	envMap := map[string]string{
+		AuthorizationToken: token,
 	}
 
 	_ = godotenv.Load(".env")
@@ -93,7 +162,7 @@ func Start(emit func(string)) error {
 
 	diskSession := disk.NewSession(token)
 
-	emit("Чтение писем...")
+	emit("Чтение писем")
 
 	if err := mail.ProcessEmails(imapClient, diskSession, emit); err != nil {
 		emit(fmt.Sprintf("Ошибка обработки почты: %v", err))

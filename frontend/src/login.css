@@ -29,8 +29,10 @@
     width: inherit;
     height: 40px;
 
-    border: none;
+    outline: none;
+    border: 1px solid #222222;
     border-radius: 8px;
+    box-shadow: none;
 
     background-color: #FFFFFF;
 
@@ -38,8 +40,108 @@
     margin-bottom: 22px;
 }
 
+.email-field {
+    position: relative;
+}
+
+.email-field.error .input-fields__input {
+    border: 1px solid #D83C3C;
+    box-shadow: 0 0 2px #D83C3C;
+}
+
+.input-fields__input.error {
+    border: 1px solid #D83C3C;
+    box-shadow: 0 0 2px #D83C3C;
+}
+
+.email-field__error-tooltip {
+    display: none;
+    position: absolute;
+    top: -32px;
+    left: 0;
+
+    background-color: #D83C3C;
+    color: white;
+    font: 400 12px/120% "Golos UI";
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.email-field.error .email-field__error-tooltip {
+    display: block;
+}
+
 .authorization__submit {
     width: fit-content;
     height: 40px;
     padding: 12px;
+}
+
+.token-field {
+    position: relative;
+}
+
+.token-field .input-fields__input {
+    box-shadow: none;
+}
+
+.token-field.error .input-fields__input {
+    border: 1px solid #D83C3C;
+    box-shadow: 0 0 2px #D83C3C;
+}
+
+.token-field__error-tooltip {
+    display: none;
+    position: absolute;
+    top: -32px;
+    left: 0;
+
+    background-color: #D83C3C;
+    color: white;
+    font: 400 12px/120% "Golos UI";
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.token-field.error .token-field__error-tooltip {
+    display: block;
+}
+
+.token-field.error .token-error-tooltip {
+    display: block;
+}
+
+
+.page__cancel-btn {
+    position: absolute;
+    top: 20px;
+    left: 16px;
+
+    background-color: transparent;
+    border: 1px solid #333333;
+    color: #333333;
+
+    font: 400 16px/100% "Golos UI";
+    padding: 6px 12px;
+    border-radius: 6px;
+
+    transition: background-color 0.2s ease-in-out;
+}
+
+.page__cancel-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.authorization__token-change-submit {
+    margin-bottom: 50px;
+}
+
+.authorization__token-change-status-info {
+    height: 90px;
 }

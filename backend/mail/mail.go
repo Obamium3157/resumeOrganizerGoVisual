@@ -32,11 +32,28 @@ func Connect(email, password string) (*imapClient.Client, error) {
 	if err := c.Login(email, password); err != nil {
 		return nil, fmt.Errorf("login failed: %v", err)
 	}
-	log.Println("IMAP подключение успешно")
+	//log.Println("IMAP подключение успешно")
 	return c, nil
 }
 
+func GetAmountOfMessages(c *imapClient.Client, box string) (uint32, error) {
+	statusItems := []imap.StatusItem{imap.StatusMessages}
+	status, err := c.Status(box, statusItems)
+	if err != nil {
+		return 0, err
+	}
+
+	return status.Messages, nil
+}
+
 func ProcessEmails(c *imapClient.Client, diskSession *disk.Session, emit func(string)) error {
+	total, err := GetAmountOfMessages(c, inbox)
+	if err != nil {
+		return err
+	}
+
+	emit(fmt.Sprintf("Писем прочитано: 0/%d", total))
+
 	if err := selectMailBox(c, inbox); err != nil {
 		return err
 	}
@@ -46,11 +63,14 @@ func ProcessEmails(c *imapClient.Client, diskSession *disk.Session, emit func(st
 		return err
 	}
 
+	count := uint32(0)
 	for msg := range messages {
 		if err := processMessage(msg, section, diskSession, emit); err != nil {
 			emit(fmt.Sprintf("Ошибка при обработке письма: %v", err))
 			log.Printf("Ошибка при обработке письма: %v", err)
 		}
+		count++
+		emit(fmt.Sprintf("Писем прочитано: %d/%d", count, total))
 	}
 
 	emit("Все письма обработаны!")

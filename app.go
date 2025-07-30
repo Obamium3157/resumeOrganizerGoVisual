@@ -35,6 +35,18 @@ func (a *App) ValidateEmail(email string) bool {
 	return re.MatchString(email)
 }
 
+func (a *App) SaveToken(token string) bool {
+	if err := handler.ValidateToken(token); err != nil {
+		return false
+	}
+
+	if err := handler.SaveToken(token); err != nil {
+		return false
+	}
+
+	return true
+}
+
 func (a *App) RunScan() {
 	runtime.EventsEmit(a.ctx, "log", "Сканирование почты")
 	if err := handler.Start(func(msg string) {
@@ -50,19 +62,24 @@ func (a *App) CheckEnvContainsEmailData() bool {
 	})
 }
 
-func (a *App) SaveCredentials(email, password string) string {
+func (a *App) SaveCredentials(email, password string) bool {
 	if !a.ValidateEmail(email) {
-		return "Неверный email"
+		return false
 	}
 	if password == "" {
-		return "Пароль не может быть пустым"
+		return false
+	}
+
+	if err := handler.ValidateCredentials(email, password); err != nil {
+		return false
 	}
 
 	err := handler.SaveCredentials(email, password)
 	if err != nil {
-		return "Ошибка при сохранении: " + err.Error()
+		return false
 	}
-	return "Успешно сохранено"
+
+	return true
 }
 
 func (a *App) GetCredential(key string) (string, error) {
