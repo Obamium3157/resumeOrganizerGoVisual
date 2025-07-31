@@ -10,15 +10,63 @@ const LOGIN_PAGE = 'login'
 const MAIN_PAGE = 'main'
 const CHANGE_TOKEN_PAGE = 'change-token'
 
+const SCAN_INTERVAL_MS = /*24 * 60 * */ 60 * 1000;
+
+let countdownTimer = null;
+let scanTimeout = null;
+let remainingTime = SCAN_INTERVAL_MS;
+let countdownStartedAt = null;
+
+function formatDuration(ms) {
+    if (ms < 0) ms = 0;
+
+    const sec = Math.floor(ms/1000) % 60;
+    const min = Math.floor(ms/60000) % 60;
+    const hr = Math.floor(ms/3600000) % 24;
+    const day = Math.floor(ms/(24*3600000));
+
+    return `${day}:${hr.toString().padStart(2,'0')}:${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+}
+
+function startAutoScanCountdown() {
+    clearInterval(countdownTimer);
+    clearTimeout(scanTimeout);
+
+    countdownStartedAt = Date.now();
+    const targetTime = countdownStartedAt + remainingTime;
+
+    countdownTimer = setInterval(() => {
+        const now = Date.now();
+        const remnant = targetTime - now;
+        remainingTime = remnant;
+
+        document.querySelector('.status__label').innerText = 'Автоматическое сканирование через:';
+        document.querySelector('.status__value').innerText = formatDuration(remnant);
+
+        if (remnant <= 0) {
+            clearInterval(countdownTimer);
+        }
+    }, 1000);
+
+    scanTimeout = setTimeout(async () => {
+        clearInterval(countdownTimer);
+        clearTimeout(scanTimeout);
+        await doScan();
+        remainingTime = SCAN_INTERVAL_MS;
+        startAutoScanCountdown();
+    }, remainingTime);
+}
+
+async function doScan() {
+    document.querySelector('.status__label').innerText = 'Сканирование почты';
+    document.querySelector('.status__value').innerText = '';
+    await RunScan().catch(err => console.error(err));
+}
+
 function showPage(name) {
-    const pages = document.querySelectorAll('.page');
-    pages.forEach((el) => el.classList.add('hidden'));
-
+    document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
     const target = document.getElementById(name);
-    if (target) {
-        target.classList.remove('hidden');
-    }
-
+    if (target) target.classList.remove('hidden');
 }
 
 const emailString = "EMAIL"
@@ -137,9 +185,11 @@ document.querySelector('.change-email').addEventListener('click', () => {
 });
 
 document.querySelector('.main__scan-btn').addEventListener('click', async () => {
-    document.querySelector('.status__label').innerText = 'Идёт сканирование почты';
-
-    await RunScan().catch(err => console.error(err));
+    clearInterval(countdownTimer);
+    clearTimeout(scanTimeout);
+    await doScan();
+    remainingTime = SCAN_INTERVAL_MS;
+    startAutoScanCountdown();
 });
 
 document.querySelector('.top-controls__change-token').addEventListener('click', () => {
