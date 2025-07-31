@@ -1,19 +1,14 @@
-# README
+# resume_organizer_goVisual
 
-## About
+Программа читает всю почту по определенному ящику в Яндекс.почте, находит все письма от отправителя tilda.ws и извлекает из формы данные о должности и ссылку на файл, а также получает информацию о дате отправки письма
 
-This is the official Wails Vanilla template.
+Далее на Яндекс диске по указанному в .env токену авторизации в корневой папке ищется файл с названием, содержащим то, что мы получили, распарсив ссылку и взяв оттуда название файла. Этот файл переносится из корневой директории ~/somefile.? в ~/job_title/YYYY/somefile.?, где job_title - название должности, YYYY - год отправки письма.
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+## Как пользоваться приложением?
 
-## Live Development
+Перед началом работы необходимо пройти регистрацию: в соответствующее поле ввести почту и пароль. Введенные данные пройдут валидацию, а также будет сделан запрос на подключение к почте. Если успешно - пользователь попадает на главную страницу
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+Также необходимо ввести токен, нажав на кнопку слева сверху. Он также будет провалидирован путем отправки запроса на Rest API Яндекс. Диска. При положительном ответе от сайта токен будет принят и можно будет начать работу с приложением
 
-## Building
-
-To build a redistributable, production mode package, use `wails build -tags webkit2_41`.
+После этого по нажатии на кнопку "Сканировать" программа начнет свою работу.
+После первого запуска программа будет стартовать автоматически по истечении отстчета
